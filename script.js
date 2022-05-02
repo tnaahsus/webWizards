@@ -11,7 +11,6 @@ btnUpload.on("change", function (e) {
     setTimeout(function () {
       btnOuter.addClass("file_uploaded");
       uploadedFile = URL.createObjectURL(e.target.files[0]);
-      // uploadedFile ='<img width="400" height="400" src="'+uploadedFile+'" />'.
       canvas();
     }, 3000);
   }
@@ -22,11 +21,12 @@ function canvas() {
   let url = `${uploadedFile}`;
   fabric.Image.fromURL(url, function (img) {
     img.set({
-      left: 50,
-      top: 0,
+      left: 10,
+      width:img.width + 20,
+      height:img.height,
     });
-    img.scaleToHeight(400,false);
-    img.scaleToWidth(400,false);
+    canvas.setWidth(img.width);
+    canvas.setHeight(img.height);
     canvas.add(img);
   });
   canvas.on("mouse:wheel", function (opt) {
