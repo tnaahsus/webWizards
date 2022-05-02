@@ -25,6 +25,7 @@ function canvas() {
       width:img.width + 20,
       height:img.height,
     });
+    document.getElementById('canvas').style.border='4px solid #83ccd3'
     canvas.setWidth(img.width);
     canvas.setHeight(img.height);
     canvas.add(img);
