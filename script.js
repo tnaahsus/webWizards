@@ -16,28 +16,47 @@ btnUpload.on("change", function (e) {
   }
 });
 
-function canvas() {
-  let canvas = new fabric.Canvas("canvas");
-  let url = `${uploadedFile}`;
-  fabric.Image.fromURL(url, function (img) {
-    img.set({
-      left: 10,
-      width:img.width + 20,
-      height:img.height,
-    });
-    document.getElementById('canvas').style.border='4px solid #83ccd3'
-    canvas.setWidth(img.width);
-    canvas.setHeight(img.height);
-    canvas.add(img);
-  });
-  canvas.on("mouse:wheel", function (opt) {
-    let delta = opt.e.deltaY;
-    let zoom = canvas.getZoom();
-    zoom *= 0.999 ** delta;
-    if (zoom > 20) zoom = 20;
-    if (zoom < 1) zoom = 1;
-    canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-    opt.e.preventDefault();
-    opt.e.stopPropagation();
-  });
+
+
+function canvas(){
+  const zoomIntensity = 0.2;
+  const canvas = document.getElementById("canvas");
+  let context = canvas.getContext("2d");
+  
+  let scale = 1;
+  let image = new Image();
+  image.src =
+  `${uploadedFile}`;
+  image.onload = draw;
+  
+  function draw() {
+    context.drawImage(image,0, 0,900,600);
+    window.requestAnimationFrame(draw);
+  }
+  
+  canvas.onwheel = function (event) {
+    event.preventDefault();
+  
+    let x = event.clientX - canvas.offsetLeft;
+    let y = event.clientY - canvas.offsetTop;
+    const wheel = event.deltaY < 0 ? 1 : -1;
+  
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel * zoomIntensity);
+    scale = Math.min(scale * zoom, 30);
+  
+    if (scale <= 1) {
+      context.resetTransform();
+      scale = 1;
+      return;
+    }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  
+    let t = context.getTransform();
+    context.resetTransform();
+    context.translate(x, y);
+    context.scale(zoom, zoom);
+    context.translate(-x, -y);
+    context.transform(t.a, t.b, t.c, t.d, t.e, t.f);
+  };
 }
